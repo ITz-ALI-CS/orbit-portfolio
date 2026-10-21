@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ali Asif | Orbit Portfolio</title>
+    <style>
+      :root {
+        --green: #00ffaa;
+        --pink: #ff6ad5;
+        --blue: #6ab7ff;
+        --bg: #03030a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        height: 100vh;
+        overflow: hidden;
+        color: #fff;
+        background: radial-gradient(
+          circle at center,
+          #0b1330 0%,
+          var(--bg) 70%
+        );
+        font-family: "Segoe UI", sans-serif;
+      }
+      #stars {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+      }
+
+      /* top bar */
+      .topbar {
+        position: fixed;
+        top: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        display: flex;
+        gap: 8px;
+        padding: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 30px;
+        backdrop-filter: blur(8px);
+      }
+      .topbar button {
+        background: none;
+        border: none;
+        color: #fff;
+        opacity: 0.65;
+        padding: 7px 14px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: 0.2s;
+      }
+      .topbar button:hover {
+        opacity: 1;
+      }
+      .topbar button.active {
+        background: var(--green);
+        color: var(--bg);
+        opacity: 1;
+        font-weight: 600;
+      }
+      .hint {
+        position: fixed;
+        top: 66px;
+        width: 100%;
+        text-align: center;
+        font-size: 12px;
+        opacity: 0.45;
+        z-index: 2;
+      }
+
+      /* orbit */
+      #stage {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        transition: transform 0.15s ease-out;
+      }
+      .ring {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        transition: opacity 0.3s;
+      }
+      .ring.skill {
+        border-color: rgba(0, 255, 170, 0.3);
+      }
+      .ring.project {
+        border-color: rgba(255, 106, 213, 0.3);
+      }
+      .ring.about {
+        border-color: rgba(106, 183, 255, 0.3);
+      }
+      .ring.dim {
+        opacity: 0.15;
+      }
+
+      .core {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        z-index: 5;
+        background: radial-gradient(circle, var(--green), #007a55);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: var(--bg);
+        font-weight: 700;
+        box-shadow: 0 0 60px rgba(0, 255, 170, 0.55);
+        animation: pulse 3s ease-in-out infinite;
+      }
+      .core small {
+        font-weight: 400;
+        font-size: 11px;
+        margin-top: 2px;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 40px rgba(0, 255, 170, 0.45);
+        }
+        50% {
+          box-shadow: 0 0 80px rgba(0, 255, 170, 0.8);
+        }
+      }
+
+      .node {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 4;
+        transition: opacity 0.3s;
+      }
+      .node.dim {
+        opacity: 0.12;
+        pointer-events: none;
+      }
+      .label {
+        padding: 8px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        cursor: pointer;
+        white-space: nowrap;
+        backdrop-filter: blur(6px);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--green);
+        transition:
+          transform 0.2s,
+          background 0.2s,
+          box-shadow 0.2s;
+      }
+      .node.project .label {
+        border-color: var(--pink);
+      }
+      .node.about .label {
+        border-color: var(--blue);
+      }
+      .node:hover .label {
+        transform: scale(1.18);
+        background: rgba(255, 255, 255, 0.18);
+        box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
+      }
+
+      /* info panel */
+      #panel {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(160%);
+        width: min(440px, 92vw);
+        padding: 22px;
+        border-radius: 18px;
+        z-index: 30;
+        background: rgba(10, 15, 40, 0.94);
+        border: 1px solid rgba(0, 255, 170, 0.5);
+        transition: transform 0.4s ease;
+        text-align: center;
+      }
+      #panel.show {
+        transform: translateX(-50%) translateY(0);
+      }
+      #panel h2 {
+        color: var(--green);
+        margin-bottom: 8px;
+      }
+      #panel p {
+        font-size: 14px;
+        opacity: 0.85;
+        margin-bottom: 12px;
+        line-height: 1.5;
+      }
+      #tags {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      #tags span {
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .btn {
+        display: inline-block;
+        margin: 0 4px;
+        padding: 8px 18px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--bg);
+        background: var(--green);
+      }
+      .btn.alt {
+        background: none;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+      }
+      #closeBtn {
+        position: absolute;
+        top: 10px;
+        right: 14px;
+        cursor: pointer;
+        opacity: 0.6;
+      }
+      #closeBtn:hover {
+        opacity: 1;
+      }
+
+      /* social links */
+      .social {
+        position: fixed;
+        left: 16px;
+        bottom: 16px;
+        z-index: 15;
+        display: flex;
+        gap: 10px;
+      }
+      .social a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 12px;
+        opacity: 0.6;
+        padding: 6px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        transition: 0.2s;
+      }
+      .social a:hover {
+        opacity: 1;
+        border-color: var(--green);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="stars"></canvas>
+
+    <div class="topbar">
+      <button class="active" data-f="all">All</button>
+      <button data-f="skill">Skills</button>
+      <button data-f="project">Projects</button>
+      <button data-f="about">About</button>
+      <button id="pauseBtn">⏸ Pause</button>
+    </div>
+    <div class="hint">
+      Hover to slow the orbit • Click any planet • Esc to close
+    </div>
+
+    <div id="stage">
+      <div class="core">Ali Asif<small>AI & Full-Stack Dev</small></div>
+    </div>
+
+    <div id="panel">
+      <span id="closeBtn">✕</span>
+      <h2 id="pTitle"></h2>
+      <p id="pText"></p>
+      <div id="tags"></div>
+      <a id="pLink" class="btn" href="#" target="_blank" rel="noopener"
+        >View on GitHub</a
+      >
+      <a id="pLive" class="btn alt" href="#" target="_blank" rel="noopener"
+        >Live Demo</a
+      >
+    </div>
+
+    <div class="social">
+      <a href="https://github.com/ITz-ALI-CS" target="_blank" rel="noopener"
+        >GitHub</a
+      >
+      <a
+        href="https://linkedin.com/in/ali-asif-cs"
+        target="_blank"
+        rel="noopener"
+        >LinkedIn</a
+      >
+    </div>
+
+    <script>
+      // ====== EDIT YOUR DATA HERE ======
+      const GH = "https://github.com/ITz-ALI-CS";
+      // Add  live: "https://..."  to any item to show a Live Demo button
+      const rings = [
+        {
+          radius: 165,
+          speed: 0.0007,
+          type: "skill",
+          items: [
+            {
+              name: "Python",
+              text: "Main language for AI and backend work.",
+              tags: ["AI", "Backend"],
+              link: GH,
+            },
+            {
+              name: "FastAPI",
+              text: "Fast APIs that power my AI apps.",
+              tags: ["API", "Python"],
+              link: GH,
+            },
+            {
+              name: "Django",
+              text: "Full-stack web apps and admin panels.",
+              tags: ["Web", "Python"],
+              link: GH,
+            },
+            {
+              name: "JavaScript",
+              text: "Interactive front-end and animations.",
+              tags: ["Frontend"],
+              link: GH,
+            },
+            {
+              name: "HTML/CSS",
+              text: "Clean, responsive page design.",
+              tags: ["Frontend", "UI"],
+              link: GH,
+            },
+            {
+              name: "SQL Server",
+              text: "Databases for my ASP.NET projects.",
+              tags: ["Database"],
+              link: GH,
+            },
+            {
+              name: "ASP.NET MVC",
+              text: "Structured web apps with C#.",
+              tags: ["Web", "C#"],
+              link: GH,
+            },
+            {
+              name: "Assembly",
+              text: "8086 / MASM low-level programming.",
+              tags: ["Low-level"],
+              link: GH,
+            },
+          ],
+        },
+        {
+          radius: 275,
+          speed: -0.0005,
+          type: "project",
+          items: [
+            {
+              name: "Sonic AI",
+              text: "RAG chatbot with FastAPI, Groq, FAISS and web search.",
+              tags: ["AI", "RAG", "FastAPI"],
+              link: GH,
+            },
+            {
+              name: "Sonic Watch",
+              text: "Stadium seat booking website with seat-view preview.",
+              tags: ["Web", "Booking"],
+              link: GH,
+            },
+            {
+              name: "SonicVerse",
+              text: "Animated online bookstore. Link coming soon.",
+              tags: ["Web", "Animation"],
+              link: GH,
+            },
+            {
+              name: "Sonic Capture",
+              text: "Image generation and vision analysis app.",
+              tags: ["AI", "Vision"],
+              link: GH,
+            },
+            {
+              name: "Sonic Local",
+              text: "Fine-tuned GPT-2 packaged as a desktop app.",
+              tags: ["AI", "Desktop"],
+              link: GH,
+            },
+            {
+              name: "Sonic Flow",
+              text: "Desktop app with a scrolling journey-style path UI.",
+              tags: ["Desktop", "UI"],
+              link: GH,
+            },
+          ],
+        },
+        {
+          radius: 375,
+          speed: 0.0003,
+          type: "about",
+          items: [
+            {
+              name: "BSCS Student",
+              text: "Studying Computer Science at NCBA&E, Lahore.",
+              tags: ["Education"],
+              link: GH,
+            },
+            {
+              name: "AI Engineer",
+              text: "My main career goal: building real AI products.",
+              tags: ["Goal"],
+              link: GH,
+            },
+            {
+              name: "Full-Stack Dev",
+              text: "Building complete apps from database to UI.",
+              tags: ["Goal"],
+              link: GH,
+            },
+            {
+              name: "GitHub",
+              text: "See all my code and projects.",
+              tags: ["Code"],
+              link: GH,
+            },
+            {
+              name: "LinkedIn",
+              text: "Let's connect professionally.",
+              tags: ["Contact"],
+              link: "https://linkedin.com/in/ali-asif-cs",
+            },
+          ],
+        },
+      ];
+      // =================================
+
+      const stage = document.getElementById("stage");
+      const panel = document.getElementById("panel");
+      const pTitle = document.getElementById("pTitle");
+      const pText = document.getElementById("pText");
+      const pLink = document.getElementById("pLink");
+      const pLive = document.getElementById("pLive");
+      const tagsEl = document.getElementById("tags");
+
+      let slow = 1,
+        paused = false,
+        scale = 1;
+
+      rings.forEach((r) => {
+        r.el = document.createElement("div");
+        r.el.className = "ring " + r.type;
+        stage.appendChild(r.el);
+
+        r.nodes = r.items.map((it, i) => {
+          const n = document.createElement("div");
+          n.className = "node " + r.type;
+          const label = document.createElement("div");
+          label.className = "label";
+          label.textContent = it.name;
+          n.appendChild(label);
+          n.onmouseenter = () => (slow = 0.15);
+          n.onmouseleave = () => (slow = 1);
+          n.onclick = () => openPanel(it);
+          stage.appendChild(n);
+          return { el: n, angle: (i / r.items.length) * Math.PI * 2 };
+        });
+      });
+
+      function openPanel(it) {
+        pTitle.textContent = it.name;
+        pText.textContent = it.text;
+        pLink.href = it.link;
+        tagsEl.innerHTML = "";
+        (it.tags || []).forEach((t) => {
+          const s = document.createElement("span");
+          s.textContent = t;
+          tagsEl.appendChild(s);
+        });
+        if (it.live) {
+          pLive.href = it.live;
+          pLive.style.display = "inline-block";
+        } else {
+          pLive.style.display = "none";
+        }
+        panel.classList.add("show");
+      }
+      function closePanel() {
+        panel.classList.remove("show");
+      }
+      document.getElementById("closeBtn").onclick = closePanel;
+      addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closePanel();
+      });
+
+      // filters
+      document.querySelectorAll(".topbar button[data-f]").forEach((b) => {
+        b.onclick = () => {
+          document
+            .querySelectorAll(".topbar button[data-f]")
+            .forEach((x) => x.classList.remove("active"));
+          b.classList.add("active");
+          const f = b.dataset.f;
+          rings.forEach((r) => {
+            const dim = f !== "all" && r.type !== f;
+            r.el.classList.toggle("dim", dim);
+            r.nodes.forEach((n) => n.el.classList.toggle("dim", dim));
+          });
+        };
+      });
+
+      // pause
+      const pauseBtn = document.getElementById("pauseBtn");
+      pauseBtn.onclick = () => {
+        paused = !paused;
+        pauseBtn.textContent = paused ? "▶ Play" : "⏸ Pause";
+      };
+
+      // size for small screens
+      function layout() {
+        scale = Math.min(1, Math.min(innerWidth, innerHeight) / 880);
+        rings.forEach(
+          (r) =>
+            (r.el.style.width = r.el.style.height =
+              r.radius * 2 * scale + "px"),
+        );
+      }
+      layout();
+      addEventListener("resize", layout);
+
+      // mouse parallax
+      addEventListener("mousemove", (e) => {
+        const dx = (e.clientX / innerWidth - 0.5) * 18;
+        const dy = (e.clientY / innerHeight - 0.5) * 18;
+        stage.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+
+      function animate() {
+        if (!paused) {
+          rings.forEach((r) =>
+            r.nodes.forEach((n) => (n.angle += r.speed * slow * 16)),
+          );
+        }
+        rings.forEach((r) =>
+          r.nodes.forEach((n) => {
+            const x = Math.cos(n.angle) * r.radius * scale;
+            const y = Math.sin(n.angle) * r.radius * scale;
+            n.el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+          }),
+        );
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      // star background
+      const c = document.getElementById("stars"),
+        ctx = c.getContext("2d");
+      function resizeStars() {
+        c.width = innerWidth;
+        c.height = innerHeight;
+      }
+      resizeStars();
+      addEventListener("resize", resizeStars);
+      const stars = Array.from({ length: 140 }, () => ({
+        x: Math.random() * innerWidth,
+        y: Math.random() * innerHeight,
+        r: Math.random() * 1.5,
+        s: Math.random() * 0.3 + 0.05,
+      }));
+      (function drawStars() {
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.fillStyle = "#fff";
+        stars.forEach((s) => {
+          s.y += s.s;
+          if (s.y > c.height) s.y = 0;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, 7);
+          ctx.fill();
+        });
+        requestAnimationFrame(drawStars);
+      })();
+    </script>
+  </body>
+</html>
