@@ -23,6 +23,7 @@
 ## 🚀 Live Projects
 | Project | Description | Live |
 |---|---|---|
+| 🌌 Space Portfolio | 3D space portfolio with 4 switchable planets, comets and warp speed (Three.js) | [Open](https://itz-ali-cs.github.io/space-portfolio/) |
 | 📋 Kanban Board | Drag and drop task board with priorities, due dates and confetti | [Open](https://itz-ali-cs.github.io/kanban-board/) |
 | 🧠 Mind Map | Infinite canvas mind map with minimap, search, focus mode and tour | [Open](https://itz-ali-cs.github.io/mind-map/) |
 
@@ -30,6 +31,6 @@
 HTML • CSS • JavaScript
 
 ## 👤 About Me
-**Ali Asif**, BSCS student at NCBA&E Lahore, working toward becoming an AI Engineer and Full-Stack Developer.
+**Ali Asif**, BSCS student at NCBA&E Lahore, working toward becoming a Full-Stack Engineer.
 
 [GitHub](https://github.com/ITz-ALI-CS) • [LinkedIn](https://linkedin.com/in/ali-asif-cs)
